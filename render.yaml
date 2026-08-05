@@ -16,7 +16,7 @@ services:
       - key: EDGE_VOICE
         value: en-US-JennyNeural
       - key: GROQ_MODEL
-        value: llama-3.1-70b-versatile
+        value: llama-3.3-70b-versatile
       - key: TIMEZONE
         value: America/Los_Angeles
       - key: REPORT_MINUTES

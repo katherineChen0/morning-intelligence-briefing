@@ -103,7 +103,7 @@ def clean_text(value: str | None) -> str:
     return re.sub(r"\s+", " ", value).strip()
 
 
-def fetch_feeds(max_per_feed: int = 3, max_total: int = 30) -> list[dict[str, str]]:
+def fetch_feeds(max_per_feed: int = 5, max_total: int = 50) -> list[dict[str, str]]:
     stories: list[dict[str, str]] = []
     seen: set[str] = set()
 
@@ -165,6 +165,7 @@ def fetch_market_snapshot(tickers: list[str]) -> list[dict[str, Any]]:
 
 def build_prompt(stories: list[dict[str, str]], markets: list[dict[str, Any]]) -> str:
     target_words = max(1100, REPORT_MINUTES * 145)
+    num_stories = len(stories)
     source_text = "\n".join(
         f"- {s['source']}: {s['title']} | {s['summary']}"
         for s in stories
@@ -174,23 +175,36 @@ def build_prompt(stories: list[dict[str, str]], markets: list[dict[str, Any]]) -
         for m in markets
     )
 
-    return f"""Create a {target_words}-word spoken morning briefing for Kat, a software engineer who wants to understand what's happening in the world.
+    return f"""Create a spoken morning briefing of EXACTLY {target_words} words (approximately {REPORT_MINUTES} minutes when read aloud) for Kat, a software engineer who wants to understand what's happening in the world.
+
+CRITICAL LENGTH REQUIREMENT:
+- The briefing MUST be at least {target_words} words. Do not cut it short.
+- You have {num_stories} news stories to work with.
+- If there are fewer stories, go DEEPER on each one. Provide more background, context, history, and analysis.
+- Fill the full {REPORT_MINUTES} minutes by being more thorough and educational, not by rushing through.
 
 DATE: {datetime.now(timezone.utc).strftime("%A, %B %d, %Y")} UTC
 
 RULES:
-- Only use facts from the sources below. Never invent.
+- Only use facts from the sources below. Never invent new events.
+- You MAY add well-known background/context/history to explain stories more deeply.
 - Attribute sources aloud ("Reuters reports...", "according to the BBC...").
 - No URLs, markdown, or bullet points in output.
 - Natural spoken transitions between sections.
-- For each major story: explain WHAT happened, WHY it happened, WHY it matters, and WHAT might happen next.
+
+FOR EACH MAJOR STORY, EXPLAIN THOROUGHLY:
+- WHAT happened (the facts)
+- BACKGROUND (what led to this, historical context)
+- WHY it matters (consequences, who's affected)
+- CONNECTIONS (how it relates to other stories, markets, or geopolitics)
+- WHAT to watch next
 
 STRUCTURE:
 
 1. OPENING
 "Good morning, Kat. Today is [date]. Here are the most important developments shaping the world today."
 
-2. WORLD NEWS (main focus - spend most time here)
+2. WORLD NEWS (main focus - spend 60% of time here)
 Cover by region, but only regions with significant news:
 
 UNITED STATES: Politics, policy, legal developments with real consequences. Skip partisan noise.
@@ -206,23 +220,26 @@ ASIA:
 
 LATIN AMERICA & AFRICA: Major developments (coups, elections, crises).
 
-For each story, explain it like I'm smart but unfamiliar with the background. Connect events to show cause and effect.
+Go deep on the most important stories. Explain like I'm smart but new to the topic.
 
 3. MARKETS & ECONOMY
 - S&P 500, Nasdaq, Dow, Treasury yields, oil, gold, bitcoin
 - Don't just say "markets rose" - explain WHY they moved
+- Connect market moves to the news stories above
 - Fed policy, inflation, employment news if relevant
 
-4. TECH & AI (brief)
+4. TECH & AI
 - Major AI developments, cybersecurity, semiconductors
-- Focus on what matters for a software engineer
+- Explain implications for software engineers and the tech industry
 
 5. QUOTE OF THE DAY
-End with one thoughtful, inspiring, or thought-provoking quote. Can be from history, philosophy, business, or science. Choose something relevant to today's themes or simply motivational for starting the day.
+End with one thoughtful, inspiring, or thought-provoking quote from history, philosophy, business, or science. Connect it to today's themes if possible.
 
-Tone: Calm, analytical, educational. Help me understand the world, not just hear headlines.
+Tone: Calm, analytical, educational. Help me understand the world deeply, not just hear headlines.
 
-NEWS:
+Remember: You MUST produce {target_words} words. If news is light, go deeper on analysis and background.
+
+NEWS ({num_stories} stories):
 {source_text}
 
 MARKETS:
@@ -239,7 +256,7 @@ def generate_transcript(stories: list[dict[str, str]], markets: list[dict[str, A
         response = groq_client.chat.completions.create(
             model=GROQ_MODEL,
             messages=[{"role": "user", "content": prompt}],
-            max_tokens=5000,
+            max_tokens=8192,
             temperature=0.7,
         )
         transcript = response.choices[0].message.content.strip()

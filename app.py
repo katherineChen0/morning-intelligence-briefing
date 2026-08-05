@@ -191,6 +191,8 @@ RULES:
 - Attribute sources aloud ("Reuters reports...", "according to the BBC...").
 - No URLs, markdown, or bullet points in output.
 - Natural spoken transitions between sections.
+- DO NOT summarize or recap what was just said. No "in summary", "to recap", "today we covered" etc. I just heard it.
+- DO NOT add closing remarks like "that's all for today" or "have a great day".
 
 FOR EACH MAJOR STORY, EXPLAIN THOROUGHLY:
 - WHAT happened (the facts)
@@ -232,8 +234,9 @@ Go deep on the most important stories. Explain like I'm smart but new to the top
 - Major AI developments, cybersecurity, semiconductors
 - Explain implications for software engineers and the tech industry
 
-5. QUOTE OF THE DAY
-End with one thoughtful, inspiring, or thought-provoking quote from history, philosophy, business, or science. Connect it to today's themes if possible.
+5. CLOSING - QUOTE OF THE DAY
+End ONLY with one thoughtful quote from history, philosophy, business, or science. 
+Say "I'll leave you with this quote from [person]:" then the quote. Nothing after the quote. No summary, no recap, no "have a great day".
 
 Tone: Calm, analytical, educational. Help me understand the world deeply, not just hear headlines.
 

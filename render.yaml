@@ -18,10 +18,10 @@ services:
       - key: EDGE_RATE
         value: "+18%"
       - key: GROQ_MODEL
-        value: llama-3.3-70b-versatile
+        value: llama-3.1-8b-instant
       - key: TIMEZONE
         value: America/Los_Angeles
       - key: REPORT_MINUTES
-        value: "25"
+        value: "15"
       - key: DATA_DIR
         value: /tmp/data

@@ -191,8 +191,10 @@ RULES:
 - Attribute sources aloud ("Reuters reports...", "according to the BBC...").
 - No URLs, markdown, or bullet points in output.
 - Natural spoken transitions between sections.
-- DO NOT summarize or recap what was just said. No "in summary", "to recap", "today we covered" etc. I just heard it.
-- DO NOT add closing remarks like "that's all for today" or "have a great day".
+- DO NOT summarize or recap what was just said. No "in summary", "to recap", "today we covered" etc.
+- DO NOT add ANY closing remarks. Forbidden phrases: "that's all for today", "thank you for listening", "I'll see you tomorrow", "have a great day", "until next time", "that concludes", "that wraps up". The briefing ends immediately after the quote.
+- DO NOT give generic advice or filler like "as we move forward", "it's essential that we", "it remains to be seen", "only time will tell", "this underscores the importance of". Just report and explain facts.
+- Be direct. No fluff. Every sentence should convey information.
 
 FOR EACH MAJOR STORY, EXPLAIN THOROUGHLY:
 - WHAT happened (the facts)

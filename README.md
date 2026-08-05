@@ -5,17 +5,30 @@ Sign up (free)
 Create an API key
 Copy it
 Step 2: Configure .env
+cd ~/Downloads/morning-intelligence-briefing
+
 Edit .env and replace:
 
 gsk_your-free-groq-key-here → your Groq API key
 replace-with-a-long-random-secret → a random string (e.g., run openssl rand -hex 32)
 Step 3: Test Locally
+# Install dependencies
+pip install -r requirements.txt
+
+# Run the server
+./start.command
+# Or: uvicorn app:app --reload
+
 Open: http://127.0.0.1:8000/audio/today?token=YOUR_ACCESS_TOKEN
 
 First run takes 2-3 minutes (generates transcript + audio).
 
 Step 4: Deploy to Render (Free)
 Create GitHub repo:
+cd ~/Downloads/morning-intelligence-briefing
+git init
+git add .
+git commit -m "Initial commit"
 
 Push to a new private GitHub repo
 
@@ -27,6 +40,8 @@ Render detects render.yaml automatically
 In Environment settings, add GROQ_API_KEY (paste your key)
 Copy the auto-generated ACCESS_TOKEN
 Test deployment:
+https://YOUR-SERVICE.onrender.com/health
+https://YOUR-SERVICE.onrender.com/audio/today?token=YOUR_ACCESS_TOKEN
 
 Step 5: iPhone Shortcut
 Shortcut 1: "Prepare Morning Briefing" (pre-generate)

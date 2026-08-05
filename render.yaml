@@ -15,6 +15,8 @@ services:
         value: edge
       - key: EDGE_VOICE
         value: en-US-JennyNeural
+      - key: EDGE_RATE
+        value: "+18%"
       - key: GROQ_MODEL
         value: llama-3.3-70b-versatile
       - key: TIMEZONE

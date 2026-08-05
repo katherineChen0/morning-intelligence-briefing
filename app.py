@@ -28,7 +28,7 @@ OPENAI_API_KEY = os.getenv("OPENAI_API_KEY", "").strip()
 GROQ_API_KEY = os.getenv("GROQ_API_KEY", "").strip()
 ACCESS_TOKEN = os.getenv("ACCESS_TOKEN", "").strip()
 TIMEZONE_NAME = os.getenv("TIMEZONE", "America/Los_Angeles")
-REPORT_MINUTES = int(os.getenv("REPORT_MINUTES", "12"))
+REPORT_MINUTES = int(os.getenv("REPORT_MINUTES", "15"))
 
 # Provider selection: "openai" or "groq" for LLM, "openai" or "edge" for TTS
 LLM_PROVIDER = os.getenv("LLM_PROVIDER", "groq").lower()
@@ -103,7 +103,7 @@ def clean_text(value: str | None) -> str:
     return re.sub(r"\s+", " ", value).strip()
 
 
-def fetch_feeds(max_per_feed: int = 4, max_total: int = 40) -> list[dict[str, str]]:
+def fetch_feeds(max_per_feed: int = 3, max_total: int = 30) -> list[dict[str, str]]:
     stories: list[dict[str, str]] = []
     seen: set[str] = set()
 
@@ -174,27 +174,53 @@ def build_prompt(stories: list[dict[str, str]], markets: list[dict[str, Any]]) -
         for m in markets
     )
 
-    return f"""Create a {target_words}-word spoken morning briefing for Kat, a software engineer.
+    return f"""Create a {target_words}-word spoken morning briefing for Kat, a software engineer who wants to understand what's happening in the world.
 
 DATE: {datetime.now(timezone.utc).strftime("%A, %B %d, %Y")} UTC
 
 RULES:
 - Only use facts from the sources below. Never invent.
-- Attribute sources aloud ("Reuters reports...").
+- Attribute sources aloud ("Reuters reports...", "according to the BBC...").
 - No URLs, markdown, or bullet points in output.
 - Natural spoken transitions between sections.
+- For each major story: explain WHAT happened, WHY it happened, WHY it matters, and WHAT might happen next.
 
 STRUCTURE:
-1. "Good morning, Kat. Today is [date]. Here are the five most important developments."
-2. World News by region (US, Europe, Middle East, Asia with emphasis on Taiwan/China, others if notable)
-3. Markets: S&P 500, Nasdaq, Dow, yields, oil, bitcoin - explain WHY they moved
-4. Companies: Apple, Microsoft, Nvidia, TSMC, AMD, Tesla, Amazon, Meta, Google
-5. AI & Tech: models, cybersecurity, semiconductors, software
-6. One investing concept explained simply
-7. One 2-minute educational deep dive on a topic from today's news
-8. Five things to watch tomorrow
 
-Tone: Calm, analytical, educational. Connect stories to show cause-and-effect.
+1. OPENING
+"Good morning, Kat. Today is [date]. Here are the most important developments shaping the world today."
+
+2. WORLD NEWS (main focus - spend most time here)
+Cover by region, but only regions with significant news:
+
+UNITED STATES: Politics, policy, legal developments with real consequences. Skip partisan noise.
+
+EUROPE: Ukraine/Russia war updates, EU policy, NATO, UK. Explain the context and stakes.
+
+MIDDLE EAST: Israel/Palestine, Iran, Gulf states, Red Sea shipping. Explain how conflicts affect oil, shipping, inflation.
+
+ASIA:
+- China: Economy, politics, military activity, US-China relations
+- Taiwan: Cross-strait tensions, TSMC, semiconductors, elections
+- Japan, South Korea, India when significant
+
+LATIN AMERICA & AFRICA: Major developments (coups, elections, crises).
+
+For each story, explain it like I'm smart but unfamiliar with the background. Connect events to show cause and effect.
+
+3. MARKETS & ECONOMY
+- S&P 500, Nasdaq, Dow, Treasury yields, oil, gold, bitcoin
+- Don't just say "markets rose" - explain WHY they moved
+- Fed policy, inflation, employment news if relevant
+
+4. TECH & AI (brief)
+- Major AI developments, cybersecurity, semiconductors
+- Focus on what matters for a software engineer
+
+5. QUOTE OF THE DAY
+End with one thoughtful, inspiring, or thought-provoking quote. Can be from history, philosophy, business, or science. Choose something relevant to today's themes or simply motivational for starting the day.
+
+Tone: Calm, analytical, educational. Help me understand the world, not just hear headlines.
 
 NEWS:
 {source_text}
@@ -213,7 +239,7 @@ def generate_transcript(stories: list[dict[str, str]], markets: list[dict[str, A
         response = groq_client.chat.completions.create(
             model=GROQ_MODEL,
             messages=[{"role": "user", "content": prompt}],
-            max_tokens=8000,
+            max_tokens=5000,
             temperature=0.7,
         )
         transcript = response.choices[0].message.content.strip()

@@ -102,13 +102,15 @@ def clean_text(value: str | None) -> str:
     return re.sub(r"\s+", " ", value).strip()
 
 
-def fetch_feeds(max_per_feed: int = 8) -> list[dict[str, str]]:
+def fetch_feeds(max_per_feed: int = 4, max_total: int = 40) -> list[dict[str, str]]:
     stories: list[dict[str, str]] = []
     seen: set[str] = set()
 
     headers = {"User-Agent": "MorningIntelligenceBriefing/1.0"}
     with httpx.Client(timeout=15, follow_redirects=True, headers=headers) as http:
         for source, url in RSS_FEEDS.items():
+            if len(stories) >= max_total:
+                break
             try:
                 response = http.get(url)
                 response.raise_for_status()
@@ -118,6 +120,8 @@ def fetch_feeds(max_per_feed: int = 8) -> list[dict[str, str]]:
                 continue
 
             for item in parsed.entries[:max_per_feed]:
+                if len(stories) >= max_total:
+                    break
                 title = clean_text(item.get("title"))
                 link = item.get("link", "")
                 summary = clean_text(item.get("summary") or item.get("description"))
@@ -130,11 +134,12 @@ def fetch_feeds(max_per_feed: int = 8) -> list[dict[str, str]]:
                     {
                         "source": source,
                         "title": title,
-                        "summary": summary[:700],
+                        "summary": summary[:300],
                         "published": published,
                         "link": link,
                     }
                 )
+    return stories
     return stories
 
 

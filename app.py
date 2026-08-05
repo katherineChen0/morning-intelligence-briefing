@@ -36,6 +36,7 @@ TTS_PROVIDER = os.getenv("TTS_PROVIDER", "edge").lower()
 
 VOICE = os.getenv("VOICE", "coral")  # OpenAI voice
 EDGE_VOICE = os.getenv("EDGE_VOICE", "en-US-JennyNeural")  # Edge TTS voice
+EDGE_RATE = os.getenv("EDGE_RATE", "+18%")  # Speed: +10% to +25% keeps engaged
 TEXT_MODEL = os.getenv("TEXT_MODEL", "gpt-5-mini")  # OpenAI model
 GROQ_MODEL = os.getenv("GROQ_MODEL", "llama-3.1-70b-versatile")  # Groq model
 TTS_MODEL = os.getenv("TTS_MODEL", "gpt-4o-mini-tts")
@@ -234,7 +235,7 @@ def synthesize_audio(transcript: str, output_path: Path) -> None:
     if TTS_PROVIDER == "edge":
         # Use free Microsoft Edge TTS
         async def _generate():
-            communicate = edge_tts.Communicate(transcript, EDGE_VOICE)
+            communicate = edge_tts.Communicate(transcript, EDGE_VOICE, rate=EDGE_RATE)
             await communicate.save(str(output_path))
 
         asyncio.run(_generate())

@@ -22,6 +22,6 @@ services:
       - key: TIMEZONE
         value: America/Los_Angeles
       - key: REPORT_MINUTES
-        value: "15"
+        value: "20"
       - key: DATA_DIR
         value: /tmp/data

@@ -1,0 +1,19 @@
+PLAY MORNING BRIEFING
+1. URL:
+   https://YOUR-SERVICE.onrender.com/audio/today?token=YOUR_ACCESS_TOKEN
+2. Get Contents of URL
+3. Set Volume to 45%
+4. Play Sound [Contents of URL]
+
+ALARM AUTOMATION
+1. Shortcuts > Automation > + > Alarm
+2. Is Stopped (or Goes Off)
+3. Choose your wake-up alarm
+4. Run Immediately / turn off Ask Before Running
+5. Run Shortcut > Play Morning Briefing
+
+OPTIONAL PRE-GENERATION
+1. URL:
+   https://YOUR-SERVICE.onrender.com/generate?token=YOUR_ACCESS_TOKEN
+2. Get Contents of URL
+3. Run 10–15 minutes before the alarm

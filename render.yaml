@@ -1,0 +1,29 @@
+services:
+  - type: web
+    name: morning-intelligence-briefing
+    runtime: docker
+    plan: free
+    healthCheckPath: /health
+    envVars:
+      - key: GROQ_API_KEY
+        sync: false
+      - key: ACCESS_TOKEN
+        generateValue: true
+      - key: LLM_PROVIDER
+        value: groq
+      - key: TTS_PROVIDER
+        value: edge
+      - key: EDGE_VOICE
+        value: en-US-JennyNeural
+      - key: GROQ_MODEL
+        value: llama-3.1-70b-versatile
+      - key: TIMEZONE
+        value: America/Los_Angeles
+      - key: REPORT_MINUTES
+        value: "25"
+      - key: DATA_DIR
+        value: /var/data
+    disk:
+      name: briefing-data
+      mountPath: /var/data
+      sizeGB: 1

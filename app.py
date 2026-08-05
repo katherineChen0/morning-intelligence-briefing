@@ -175,13 +175,14 @@ def build_prompt(stories: list[dict[str, str]], markets: list[dict[str, Any]]) -
         for m in markets
     )
 
-    return f"""Create a spoken morning briefing of EXACTLY {target_words} words (approximately {REPORT_MINUTES} minutes when read aloud) for Kat, a software engineer who wants to understand what's happening in the world.
+    return f"""Create a spoken morning briefing of EXACTLY {target_words} words (exactly {REPORT_MINUTES} minutes when read aloud) for Kat, a software engineer who wants to understand what's happening in the world.
 
-CRITICAL LENGTH REQUIREMENT:
-- The briefing MUST be at least {target_words} words. Do not cut it short.
-- You have {num_stories} news stories to work with.
-- If there are fewer stories, go DEEPER on each one. Provide more background, context, history, and analysis.
-- Fill the full {REPORT_MINUTES} minutes by being more thorough and educational, not by rushing through.
+CRITICAL: EXACTLY {target_words} WORDS - NO MORE, NO LESS.
+- You have {num_stories} news stories.
+- If few stories: go DEEP on each one with background, history, context, and analysis.
+- If many stories: be concise, cover only the most important ones, skip minor news.
+- Either way, the output MUST be exactly {target_words} words (~{REPORT_MINUTES} minutes).
+- Do NOT exceed {target_words} words. Do NOT fall short of {target_words} words.
 
 DATE: {datetime.now(timezone.utc).strftime("%A, %B %d, %Y")} UTC
 
@@ -242,7 +243,7 @@ Say "I'll leave you with this quote from [person]:" then the quote. Nothing afte
 
 Tone: Calm, analytical, educational. Help me understand the world deeply, not just hear headlines.
 
-Remember: You MUST produce {target_words} words. If news is light, go deeper on analysis and background.
+FINAL REMINDER: Output EXACTLY {target_words} words. Not 1500, not 5000. Exactly {target_words}. Adjust depth accordingly.
 
 NEWS ({num_stories} stories):
 {source_text}
@@ -261,7 +262,7 @@ def generate_transcript(stories: list[dict[str, str]], markets: list[dict[str, A
         response = groq_client.chat.completions.create(
             model=GROQ_MODEL,
             messages=[{"role": "user", "content": prompt}],
-            max_tokens=8192,
+            max_tokens=4500,  # ~20 minutes of audio
             temperature=0.7,
         )
         transcript = response.choices[0].message.content.strip()
